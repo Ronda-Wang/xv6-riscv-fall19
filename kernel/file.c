@@ -16,7 +16,7 @@
 struct devsw devsw[NDEV];
 struct {
   struct spinlock lock;
-  // struct file file[NFILE];
+  // struct file file[NFILE];******
 } ftable;
 
 void
@@ -27,7 +27,7 @@ fileinit(void)
 
 // Allocate a file structure.
 struct file*
-filealloc(void)
+filealloc(void)//分配一个文件结构
 {
   struct file *f;
 
@@ -39,7 +39,7 @@ filealloc(void)
   //     return f;
   //   }
   // }
-  f = (struct file*)bd_malloc(sizeof(struct file));
+  f = (struct file*)bd_malloc(sizeof(struct file));//分配内存
   if(f) {
     memset(f, 0, sizeof(struct file));
     f->ref = 1;
@@ -75,10 +75,11 @@ fileclose(struct file *f)
     release(&ftable.lock);
     return;
   }
+  //文件被引用次数为0后，释放内存
   ff = *f;
   f->ref = 0;
   f->type = FD_NONE;
-  bd_free(f);
+  bd_free(f);//*********
   release(&ftable.lock);
 
   if(ff.type == FD_PIPE){
